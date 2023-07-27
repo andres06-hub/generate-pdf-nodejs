@@ -1,0 +1,22 @@
+{
+  "name": "generatepdf-pdflib",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "base64-img": "^1.0.4",
+    "fs": "^0.0.1-security",
+    "pdf-lib": "^1.17.1",
+    "pdfmake": "^0.2.7",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@types/pdfmake": "^0.2.2"
+  }
+}
