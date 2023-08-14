@@ -11,12 +11,13 @@ import fs from 'node:fs';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-const fetchImage = async (url: string): Promise<ArrayBuffer> => {
-  const res = await fetch(url);
-  return res.arrayBuffer();
-};
-
-const buildHeader = async (url: string): Promise<Content> => {
+const buildHeader = async (
+  url: string,
+  urlClient: string
+): Promise<Content> => {
+  const logoClient = await fetchImage(urlClient);
+  const logoClientBf = Buffer.from(logoClient);
+  const logoClientBase64 = logoClientBf.toString('base64');
   const imgBase64 = await fetchImage(url);
 
   const imageBuffer = Buffer.from(imgBase64);
@@ -32,6 +33,12 @@ const buildHeader = async (url: string): Promise<Content> => {
         // style: 'header',
         alignment: 'left',
       },
+      // {
+      //   image: 'data:image/png;base64,' + logoClientBase64,
+      //   width: 160,
+      //   height: 30,
+      //   alignment: 'left',
+      // },
       {
         // Columna 1: Imagen
         image: 'data:image/jpeg;base64,' + imageBase64,
@@ -77,21 +84,7 @@ const buildTables = async (): Promise<Content> => {
     },
   ];
 
-  // for (let ele of data) {
-  //   console.log('## ', ele);
-  //   for (let list of ele) {
-  //     console.log('-->  ', list);
-  //     let body: Content[] = [
-  //       {
-  //         text: `$${list.value}\n${list.name}`,
-  //         style: 'contentTablesTier',
-  //       },
-  //     ];
-  //     bodyList.push(body);
-  //   }
-  // }
-
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 4; i++) {
     let bodyList: TableCell[][] = [];
     for (let ele of data) {
       let body: Content[] = [
@@ -131,6 +124,11 @@ const buildTables = async (): Promise<Content> => {
     margin: [0, 25, 0, 25],
     columns: tablesList,
   };
+};
+
+const fetchImage = async (url: string): Promise<ArrayBuffer> => {
+  const res = await fetch(url);
+  return res.arrayBuffer();
 };
 
 const buidContent = async (): Promise<Content> => {
@@ -211,7 +209,8 @@ const createPDF = async () => {
   const documentDefinition: TDocumentDefinitions = {
     content: [
       await buildHeader(
-        'https://quickquote.beyondfloods.com/static/media/BF_Logo_with_Text.d819e341.png'
+        'https://quickquote.beyondfloods.com/static/media/BF_Logo_with_Text.d819e341.png',
+        'https://minio.ops.cuemby.net/cep/iep/flood/clients/logoPolicySimple.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YOURACCESSKEY%2F20230811%2F%2Fs3%2Faws4_request&X-Amz-Date=20230811T030300Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=1e49cf62af681712161ac4f4c2326dc0a9d30be49cce3dbd736ead8ccbb98c78'
       ),
       await buildTags(
         'Flood Risk Issues Found for Property, Given Coverages Chosen'
